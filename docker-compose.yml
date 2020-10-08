@@ -1,0 +1,35 @@
+version: '3.1'
+
+volumes:
+  jombkp_db_vol:
+  jombkp_app_vol:
+
+services:
+  jombkp_app:
+    build: .
+    container_name: jombkp_app
+    links:
+      - jombkp_db:jombkp_db
+    depends_on:
+      - jombkp_db
+    ports:
+      - 8080:80
+    environment:
+      JOOMLA_DB_HOST: jombkp_db
+      JOOMLA_DB_PASSWORD: password
+    volumes:
+      - ./volumes/archives:/var/www/html/archives
+      - jombkp_app_vol:/var/www/html
+    restart: "no"
+  
+  jombkp_db:
+    image: linuxserver/mariadb:latest
+    container_name: jombkp_db
+    volumes:
+      - jombkp_db_vol:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_PASSWORD: password
+      MYSQL_DATABASE: database
+      MYSQL_USER: user
+    restart: "no"
